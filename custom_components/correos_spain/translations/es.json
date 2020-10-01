@@ -1,0 +1,20 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+        },
+        "error": {
+            "unknown": "[%key:common::config_flow::error::unknown%]"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "name": "Nombre del Paquete",
+                    "tracking_number": "Número de Seguimiento",
+                    "delete_delivered": "Borrar tras recibirlo"
+                }
+            }
+        }
+    },
+    "title": "Correos España"
+}

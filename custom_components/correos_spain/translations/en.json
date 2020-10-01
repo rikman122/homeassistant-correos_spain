@@ -1,0 +1,20 @@
+{
+    "config": {
+        "abort": {
+            "already_configured": "[%key:common::config_flow::abort::already_configured_device%]"
+        },
+        "error": {
+            "unknown": "[%key:common::config_flow::error::unknown%]"
+        },
+        "step": {
+            "user": {
+                "data": {
+                    "name": "Package Name",
+                    "tracking_number": "Tracking Number",
+                    "delete_delivered": "Delete After Delivered"
+                }
+            }
+        }
+    },
+    "title": "Correos Spain Tracking"
+}
