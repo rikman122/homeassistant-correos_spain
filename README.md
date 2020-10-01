@@ -6,7 +6,7 @@ This integration allows you to retrieve tracking information from the Spain's Co
 
 Copy `/custom_components/correos_spain/` folder to `<config_dir>/custom_components/correos_spain/`.
 
-Add a Correos Spain Tracking integration from the UI and fill the form. You can add as new integration as package you want to track.
+Add a Correos Spain Tracking integration from the UI and fill the form. You can add as new integrations as package you want to track.
 
 ### Data Provided
 
@@ -21,11 +21,11 @@ Each package sensor provide the following information as attributes:
   
 The sensor's state is equal to the last event attribute
 
-### Aditional Features
+### Additional Features
 
 * Notify when a package is in delivery process
 * Auto delete sensor when package is delivered if specified
 
 ### Disclaimer
 
-All the data is provided by [Sociedad Estatal de Correos y Telégrafos, S.A.](https://www.correos.es/). I'm not related to this company in any way so I'm not responsible of the provided information
+All the data is provided by [Sociedad Estatal de Correos y Telégrafos, S.A.](https://www.correos.es/) I'm not related to this company in any way so I'm not responsible of the provided information
