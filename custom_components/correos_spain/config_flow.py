@@ -9,7 +9,7 @@ DATA_SCHEMA = vol.Schema(
     {
         vol.Required("name"): str,
         vol.Required("tracking_number"): str,
-        vol.Required("delete_delivered"): bool,
+        vol.Optional("delete_delivered", default=False): bool,
     }
 )
 
