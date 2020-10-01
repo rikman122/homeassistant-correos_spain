@@ -28,5 +28,4 @@ The sensor's state is equal to the last event attribute
 
 ### Disclaimer
 
-All the data is provided by Sociedad Estatal de Correos y Telégrafos, S.A. [Correos](https://www.correos.es/)
-I'm not related to this company in any way so I'm not responsible of the provided information
+All the data is provided by [Sociedad Estatal de Correos y Telégrafos, S.A.](https://www.correos.es/). I'm not related to this company in any way so I'm not responsible of the provided information
