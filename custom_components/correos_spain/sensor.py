@@ -78,6 +78,7 @@ class CorreosSpainPackageSensor(Entity):
         self._tracking_number = tracking_number
         self._event_code = None
         self._delete_delivered = delete_delivered
+        self._already_notified = False
         self.entity_id = ENTITY_ID_TEMPLATE.format(self._tracking_number)
 
     @property
@@ -150,7 +151,7 @@ class CorreosSpainPackageSensor(Entity):
             self.hass.async_create_task(self._remove())
             return
 
-        if self._event_code == EVENT_CODE_IN_DELIVERY:
+        if self._event_code == EVENT_CODE_IN_DELIVERY and not self._already_notified:
             self._notify_in_delivery()
 
     async def _remove(self):
@@ -178,3 +179,5 @@ class CorreosSpainPackageSensor(Entity):
         self.hass.components.persistent_notification.create(
             message, title=title, notification_id=notification_id
         )
+
+        self._already_notified = True
