@@ -1,14 +1,20 @@
 """Sensor platform for the Coreos Spain Post Service."""
 from homeassistant.const import ATTR_ATTRIBUTION
 from homeassistant.helpers.entity import Entity
-from homeassistant.helpers import aiohttp_client
+from homeassistant.helpers import (
+    aiohttp_client,
+    entity_platform,
+    service,
+)
 import ssl
 import asyncio
 import aiohttp
 import async_timeout
+import time
 
 from .const import (
     LOGGER,
+    DOMAIN,
     UNIQUE_ID_TEMPLATE,
     ENTITY_ID_TEMPLATE,
     CORREOS_API_TEMPLATE,
@@ -27,6 +33,7 @@ ATTR_TIME = "time"
 ATTR_TRACKING_NUMBER = "tracking_number"
 ATTR_FRIENDLY_NAME = "friendly_name"
 ATTR_LOCATION = "location"
+ATTR_IN_DELIVERY = "in_delivery"
 
 EVENT_CODE_DELIVERED = "I010000V"
 EVENT_CODE_IN_DELIVERY = "H020000V"
@@ -38,6 +45,8 @@ EVENT_CODE_REGISTERED = "A090000V"
 NOTIFICATION_DELIVERY_ID = "correos_package_in_delivery_{0}"
 NOTIFICATION_DELIVERY_TITLE = "Paquete en reparto"
 NOTIFICATION_DELIVERY_MESSAGE = "El paquete {0} está en reparto"
+
+SERVICE_REMOVE = "remove"
 
 
 async def async_setup_entry(hass, config_entry, async_add_entities):
@@ -51,16 +60,20 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
                 config_entry.data["name"],
                 config_entry.data["tracking_number"],
                 config_entry.data["delete_delivered"],
+                config_entry.entry_id,
             )
         ],
         True,
     )
 
+    # platform = entity_platform.current_platform.get()
+    # platform.async_register_entity_service(SERVICE_REMOVE, {}, "async_remove_service")
+
 
 class CorreosSpainPackageSensor(Entity):
     """Sensor representing package data."""
 
-    def __init__(self, client, name, tracking_number, delete_delivered):
+    def __init__(self, client, name, tracking_number, delete_delivered, entry_id):
         """Initialize package sensor."""
         self.client = client
         self._attrs = {
@@ -72,6 +85,7 @@ class CorreosSpainPackageSensor(Entity):
             ATTR_LOCATION: None,
             ATTR_DATE: None,
             ATTR_TIME: None,
+            ATTR_IN_DELIVERY: False,
         }
         self._friendly_name = name
         self._state = None
@@ -79,6 +93,7 @@ class CorreosSpainPackageSensor(Entity):
         self._event_code = None
         self._delete_delivered = delete_delivered
         self._already_notified = False
+        self._entry_id = entry_id
         self.entity_id = ENTITY_ID_TEMPLATE.format(self._tracking_number)
 
     @property
@@ -152,12 +167,12 @@ class CorreosSpainPackageSensor(Entity):
             return
 
         if self._event_code == EVENT_CODE_IN_DELIVERY and not self._already_notified:
+            self._attrs[ATTR_IN_DELIVERY] = True
             self._notify_in_delivery()
 
     async def _remove(self):
         """Remove entity itself."""
         await self.async_remove()
-
         reg = await self.hass.helpers.entity_registry.async_get_registry()
         entity_id = reg.async_get_entity_id(
             "sensor",
@@ -166,6 +181,8 @@ class CorreosSpainPackageSensor(Entity):
         )
         if entity_id:
             reg.async_remove(entity_id)
+
+        await self.hass.config_entries.async_remove(self._entry_id)
 
     def _notify_in_delivery(self):
         """Notify when package is in delivery process"""
