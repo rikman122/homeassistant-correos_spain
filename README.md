@@ -53,15 +53,15 @@ filter:
               type: entities
               show_header_toggle: false
               entities:
-                - sensor.correos_spain_package_lb925920636be
-                - entity: sensor.correos_spain_package_lb925920636be
+                - this.entity_id
+                - entity: this.entity_id
                   icon: []
                   type: 'custom:multiple-entity-row'
                   show_state: false
                   name: []
                   entities:
                     - attribute: description
-                - entity: sensor.correos_spain_package_lb925920636be
+                - entity: this.entity_id
                   icon: []
                   type: 'custom:multiple-entity-row'
                   show_state: false
