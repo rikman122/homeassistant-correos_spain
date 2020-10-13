@@ -10,7 +10,6 @@ import ssl
 import asyncio
 import aiohttp
 import async_timeout
-import time
 
 from .const import (
     LOGGER,
@@ -20,7 +19,7 @@ from .const import (
     CORREOS_API_TEMPLATE,
     ATTRIBUTION,
 )
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 SCAN_INTERVAL = timedelta(minutes=15)
 
@@ -80,17 +79,17 @@ class CorreosSpainPackageSensor(Entity):
             ATTR_ATTRIBUTION: ATTRIBUTION,
             ATTR_FRIENDLY_NAME: name,
             ATTR_TRACKING_NUMBER: tracking_number,
-            ATTR_EVENT: None,
-            ATTR_DESCRIPTION: None,
-            ATTR_LOCATION: None,
-            ATTR_DATE: None,
-            ATTR_TIME: None,
+            ATTR_EVENT: "No Disponible",
+            ATTR_DESCRIPTION: "No Disponible",
+            ATTR_LOCATION: "No Disponible",
+            ATTR_DATE: "No Disponible",
+            ATTR_TIME: "No Disponible",
             ATTR_IN_DELIVERY: False,
         }
         self._friendly_name = name
         self._state = None
         self._tracking_number = tracking_number
-        self._event_code = None
+        self._event_code = "No Disponible"
         self._delete_delivered = delete_delivered
         self._already_notified = False
         self._entry_id = entry_id
@@ -114,7 +113,7 @@ class CorreosSpainPackageSensor(Entity):
     @property
     def name(self):
         """Return the name."""
-        return f"{self._friendly_name} - {self._tracking_number}"
+        return self._friendly_name
 
     @property
     def state(self):
@@ -141,9 +140,12 @@ class CorreosSpainPackageSensor(Entity):
                 error = tracking_info[0]["error"]
 
                 if error["codError"] != "0":
-                    self._state = "Unknown"
+                    now = datetime.now()
+                    self._state = "No disponible"
                     self._attrs[ATTR_DESCRIPTION] = error["desError"]
                     self._event_code = error["codError"]
+                    self._attrs[ATTR_DATE] = now.strftime("%d-%m-%Y")
+                    self._attrs[ATTR_TIME] = now.strftime("%H:%M:%S")
                     return
 
                 else:
@@ -158,7 +160,9 @@ class CorreosSpainPackageSensor(Entity):
 
         except (asyncio.TimeoutError, aiohttp.ClientError):
             self._state = "Error"
-            self._attrs[ATTR_DESCRIPTION] = "Something went wrong updating the state"
+            self._attrs[
+                ATTR_DESCRIPTION
+            ] = "Ha ocurrido un error al actualizar la información de seguimiento"
             self._event_code = "-1"
             return
 
