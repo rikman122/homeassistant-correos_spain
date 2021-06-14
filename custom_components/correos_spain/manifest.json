@@ -1,6 +1,7 @@
 {
   "domain": "correos_spain",
   "name": "Correos Spain Tracking",
+  "version": "1.4",
   "config_flow": true,
   "documentation": "https://www.home-assistant.io/integrations/correos_spain",
   "requirements": [],
